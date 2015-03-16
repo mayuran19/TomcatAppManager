@@ -1,0 +1,74 @@
+<project name="Tomcat start stop application" default="compile" basedir=".">
+
+	<!-- Configure the directory into which the web application is built -->
+	<property name="build" value="${basedir}/build" />
+
+	<!-- Configure the context path for this application -->
+	<property name="path" value="/axisattachmentservice" />
+
+	<!-- Configure properties to access the Manager application -->
+	<property name="url" value="https://localhost:8443/manager/text" />
+	<property name="username" value="tomcat" />
+	<property name="password" value="tomcat" />
+	
+	<path id="tomcat.classpath">
+		<fileset dir="/home/mayuran/programfiles/apache-tomcat-7.0.26/lib/">
+	        <include name="**/*.jar" />
+	    </fileset>
+		<fileset dir="/home/mayuran/programfiles/apache-tomcat-7.0.26/bin/">
+	        <include name="**/*.jar" />
+	    </fileset>
+	</path>
+		
+	<pathconvert property="classpathProp" refid="tomcat.classpath"/>
+	<echo>Classpath is ${classpathProp}</echo>
+
+	<!-- Configure the custom Ant tasks for the Manager application -->
+	<taskdef classpathref="tomcat.classpath" name="deploy" classname="org.apache.catalina.ant.DeployTask" />
+	<taskdef classpathref="tomcat.classpath" name="list" classname="org.apache.catalina.ant.ListTask" />
+	<taskdef classpathref="tomcat.classpath" name="reload" classname="org.apache.catalina.ant.ReloadTask" />
+	<taskdef classpathref="tomcat.classpath" name="resources" classname="org.apache.catalina.ant.ResourcesTask" />
+	<!--<taskdef classpathref="tomcat.classpath" name="start" classname="org.apache.catalina.ant.StartTask" /> -->
+	<taskdef classpathref="tomcat.classpath" name="start" classname="com.mayuran19.catalina.ant.secure.SecureStartTask" />
+	<!--<taskdef classpathref="tomcat.classpath" name="stop" classname="org.apache.catalina.ant.StopTask" /> -->
+	<taskdef classpathref="tomcat.classpath" name="stop" classname="com.mayuran19.catalina.ant.secure.SecureStopTask" />
+	<taskdef classpathref="tomcat.classpath" name="undeploy" classname="org.apache.catalina.ant.UndeployTask" />
+
+	<!-- Executable Targets -->
+	<target name="compile" description="Compile web application">
+		<!-- ... construct web application in ${build} subdirectory, and generated 
+			a ${path}.war ... -->
+	</target>
+
+	<target name="deploy" description="Install web application"
+		depends="compile">
+		<deploy url="${url}" username="${username}" password="${password}"
+			path="${path}" war="file:${build}${path}.war" />
+	</target>
+
+	<target name="reload" description="Reload web application"
+		depends="compile">
+		<reload url="${url}" username="${username}" password="${password}"
+			path="${path}" />
+	</target>
+
+	<target name="undeploy" description="Remove web application">
+		<undeploy url="${url}" username="${username}" password="${password}"
+			path="${path}" />
+	</target>
+	
+	<target name="start" description="Start web application">
+		<start url="${url}" username="${username}" password="${password}" truststorepath="/home/mayuran/workspace/openssl/two/client.jks"
+			path="${path}" />
+	</target>
+
+	<target name="stop" description="Stop web application">
+		<stop url="${url}" username="${username}" password="${password}" truststorepath="/home/mayuran/workspace/openssl/two/client.jks"
+			path="${path}" />
+	</target>
+
+	<target name="list" description="List web application">
+		<list url="${url}" username="${username}" password="${password}" />
+	</target>
+
+</project>
